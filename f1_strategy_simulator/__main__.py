@@ -49,12 +49,12 @@ def simulate_race(
         compounds = strategy.compounds
 
         # build stint lengths
-        stint_lengths = []
-        prev = 0
-        for stop in stop_laps:
-            stint_lengths.append(stop - prev)
-            prev = stop
-        stint_lengths.append(number_of_laps - prev)  # final stint to end
+        stint_lengths = [
+            stop - prev for prev, stop in zip([0] + stop_laps[:-1], stop_laps)
+        ]
+        stint_lengths.append(
+            number_of_laps - stop_laps[-1] if stop_laps else number_of_laps
+        )
 
         # now multiply avg lap times by stint lengths
         for i, (compound, stint_len) in enumerate(zip(compounds, stint_lengths)):
