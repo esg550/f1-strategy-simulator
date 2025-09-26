@@ -37,7 +37,8 @@ def calculate_tyre_degradation(
 
     slopes = [
         stats.linregress(
-            stint_data["lap_number"], stint_data["lap_time_approx_s"]
+            stint_data["lap_number"].astype(float),
+            stint_data["lap_time_approx_s"].apply(lambda x: x.total_seconds()),
         ).slope
         for _, stint_data in stints
         if len(stint_data) >= 3
@@ -117,5 +118,7 @@ def calculate_avg_lap_time(race: str, year: int, compound: str, driver: str) -> 
     )
 
     stint_laps = cleaned_session[cleaned_session["compound"] == compound]
-    avg_lap_time = stint_laps["lap_time_approx_s"].mean()
+    avg_lap_time = (
+        stint_laps["lap_time_approx_s"].apply(lambda x: x.total_seconds()).mean()
+    )
     return avg_lap_time
