@@ -63,9 +63,12 @@ def simulate_race(
     return total_race_times
 
 
-def calculate_tyre_degradation_and_avg_lap_times(driver, race, year, strategies):
-    tyre_degs = {}
-    avg_lap_times = {}
+def calculate_tyre_degradation_and_avg_lap_times(
+    driver: str, race: str, year: int, strategies: list[dict]
+) -> tuple[dict, dict]:
+    tyre_degs: dict[str, dict[str, float]] = {}
+    avg_lap_times: dict[str, dict[str, float]] = {}
+
     compounds_cache = {}
 
     for strategy in strategies:

@@ -3,6 +3,7 @@ from fastf1.core import Session
 
 import numpy as np
 import scipy.stats as stats
+import logging
 
 from f1_strategy_simulator.cleaner import clean_one_race
 import f1_strategy_simulator.common.names as n
@@ -60,9 +61,9 @@ def calculate_tyre_degradation(
         stint_deg[stint_number] = slope
 
     if len(stint_deg) == 0:
-        print(
-            f"""No valid stint data for driver={driver},
-            race={race}, year={year}, compound={compound}"""
+        logging.warning(
+            f"""No valid stint data for driver={driver}, race={race},
+              year={year}, compound={compound}"""
         )
         avg_deg = np.nan
     else:
@@ -85,7 +86,8 @@ def get_last_race_without_rain(race: str, year: int, driver: str) -> Session:
         Session: Cleaned race data for the specified driver
     """
     wet_compounds = ["INTERMEDIATE", "WET"]
-    while True:
+    max_year_limit = 1950  # Formula 1 started in 1950
+    while year >= max_year_limit:
         session_previous_year = fastf1.get_session(year, race, n.RACE)
         session_previous_year.load()
         driver_laps_previous_year = session_previous_year.laps
@@ -96,6 +98,11 @@ def get_last_race_without_rain(race: str, year: int, driver: str) -> Session:
                 session=session_previous_year, driver=driver
             ).reset_index(drop=True)
             return cleaned_session
+
+    raise ValueError(
+        f"""No suitable race found without rain for race={race},
+          driver={driver} starting from year={year}."""
+    )
 
 
 def calculate_avg_lap_time(race: str, year: int, compound: str, driver: str) -> float:

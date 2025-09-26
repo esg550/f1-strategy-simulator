@@ -1,5 +1,3 @@
-# Refactor this code to make it cleaner, remove redundancy, and follow best practices
-
 import pandas as pd
 from fastf1.core import Session
 from fastf1.core import Laps
@@ -11,10 +9,8 @@ def clean_race_data(session: Session, driver: str) -> pd.DataFrame:
     Fetches and cleans FastF1 lap data for a given race and driver.
 
     Args:
-        year: Race year
-        event: Race name (e.g., 'Monaco')
-        session_type: 'R' (race), 'Q' (qualifying), 'FP1', etc.
-        driver: Optional; if None, fetch all drivers
+        session: Fastf1 session.
+        driver: Driver code (e.g., 'HAM' for Lewis Hamilton).
 
     Returns:
         pd.DataFrame with cleaned lap data
@@ -62,11 +58,11 @@ def _expand_track_statuses(laps: Laps, df: pd.DataFrame) -> pd.DataFrame:
 def _approximate_empty_lap_times(laps: Laps, df: pd.DataFrame) -> pd.DataFrame:
     """Approximate missing lap times using telemetry data."""
 
-    laps = laps.copy()  # Create a copy to avoid SettingWithCopyWarning
+    laps = laps.copy()
     laps.loc[:, "LapTimeApprox"] = laps["LapTime"]
 
     # Replace NaN lap times with telemetry-based estimates
-    for i, lap in laps.iterlaps():  # iterlaps() yields (index, Lap) pairs
+    for i, lap in laps.iterlaps():
         if pd.isna(lap.LapTime):
             telem = lap.get_telemetry()
             laps.loc[i, "LapTimeApprox"] = telem["Time"].max() - telem["Time"].min()
