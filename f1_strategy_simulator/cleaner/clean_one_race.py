@@ -57,16 +57,14 @@ def _expand_track_statuses(laps: Laps, df: pd.DataFrame) -> pd.DataFrame:
 
 def _approximate_empty_lap_times(laps: Laps, df: pd.DataFrame) -> pd.DataFrame:
     """Approximate missing lap times using telemetry data."""
+    laps["lap_time_approx_s"] = laps["LapTime"].copy()
 
-    laps = laps.copy()
-    laps.loc[:, "LapTimeApprox"] = laps["LapTime"]
-
-    # Replace NaN lap times with telemetry-based estimates
-    for i, lap in laps.iterlaps():
+    def _approx_lap_time(lap):
+        """Replace NaN lap times with telemetry-based estimates"""
         if pd.isna(lap.LapTime):
             telem = lap.get_telemetry()
-            laps.loc[i, "LapTimeApprox"] = telem["Time"].max() - telem["Time"].min()
+            return (telem["Time"].max() - telem["Time"].min()).total_seconds()
+        return lap["LapTime"]
 
-    df["lap_time_approx_s"] = laps["LapTimeApprox"].dt.total_seconds()
-
+    df["lap_time_approx_s"] = [_approx_lap_time(lap) for _, lap in laps.iterlaps()]
     return df
