@@ -3,6 +3,7 @@ from fastf1.core import Session
 
 import numpy as np
 import scipy.stats as stats
+import pandas as pd
 import logging
 
 from f1_strategy_simulator.cleaner import clean_one_race
@@ -29,49 +30,44 @@ def calculate_tyre_degradation(
         race=race, year=year - 1, driver=driver
     )
 
-    # filter only the compound and remove safety car/VSC/red flag laps
-    mask = (
-        (cleaned_session["compound"] == compound)
-        & (cleaned_session["RED_FLAG"] == 0)
-        & (cleaned_session["YELLOW"] == 0)
-        & (cleaned_session["SAFETY_CAR"] == 0)
-        & (cleaned_session["VIRTUAL_SAFETY_CAR"] == 0)
-        & (cleaned_session["VSC_ENDING"] == 0)
-    )
-    compound_laps = cleaned_session[mask].copy()
-
-    # remove in- and out-laps explicitly
-    compound_laps = compound_laps[
-        (~compound_laps["pit_stop_in_lap"])
-        & (~compound_laps["pit_stop_out_lap"])
-        & (compound_laps["lap_number"] != 1.0)
-    ]
+    compound_laps = _filter_valid_laps(cleaned_session, compound)
 
     # group by stints
     stints = compound_laps.groupby("stint")
 
-    stint_deg = {}
-    for stint_number, stint_data in stints:
-        if len(stint_data) < 3:
-            # too few laps to fit a line
-            continue
-        slope, _, _, _, _ = stats.linregress(
+    slopes = [
+        stats.linregress(
             stint_data["lap_number"], stint_data["lap_time_approx_s"]
-        )
-        stint_deg[stint_number] = slope
+        ).slope
+        for _, stint_data in stints
+        if len(stint_data) >= 3
+    ]
 
-    if len(stint_deg) == 0:
+    if not slopes:
         logging.warning(
-            f"""No valid stint data for driver={driver}, race={race},
-              year={year}, compound={compound}"""
+            f"""No valid stints for driver={driver},
+                        race={race}, year={year}, compound={compound}"""
         )
-        avg_deg = np.nan
-    else:
-        avg_deg = np.mean(list(stint_deg.values()))
+        return np.nan
 
-    fuel_corrected_avg_deg = avg_deg + c.FUEL_CORRECTION_SECONDS
+    return np.mean(slopes) + c.FUEL_CORRECTION_SECONDS
 
-    return fuel_corrected_avg_deg
+
+def _filter_valid_laps(df: pd.DataFrame, compound: str) -> pd.DataFrame:
+    """Filters laps for a given compound, excluding pit laps,
+    first lap, and race interruptions."""
+    mask = (
+        (df["compound"] == compound)
+        & (~df["pit_stop_in_lap"])
+        & (~df["pit_stop_out_lap"])
+        & (df["lap_number"] != 1)
+        & (df["RED_FLAG"] == 0)
+        & (df["YELLOW"] == 0)
+        & (df["SAFETY_CAR"] == 0)
+        & (df["VIRTUAL_SAFETY_CAR"] == 0)
+        & (df["VSC_ENDING"] == 0)
+    )
+    return df[mask].copy()
 
 
 def get_last_race_without_rain(race: str, year: int, driver: str) -> Session:
