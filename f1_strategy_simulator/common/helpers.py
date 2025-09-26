@@ -46,8 +46,8 @@ def calculate_tyre_degradation(
 
     if not slopes:
         logging.warning(
-            f"""No valid stints for driver={driver},
-                        race={race}, year={year}, compound={compound}"""
+            f"No valid stints for driver={driver}, race={race}, year={year}, "
+            f"compound={compound}"
         )
         return np.nan
 
@@ -97,8 +97,8 @@ def get_last_race_without_rain(race: str, year: int, driver: str) -> Session:
             return cleaned_session
 
     raise ValueError(
-        f"""No suitable race found without rain for race={race},
-          driver={driver} starting from year={year}."""
+        f"No suitable race found without rain for race={race}, "
+        f"driver={driver} starting from year={year}."
     )
 
 

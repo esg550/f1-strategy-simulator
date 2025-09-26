@@ -112,7 +112,7 @@ def calculate_total_stint_time(
 
 
 if __name__ == "__main__":
-    simulate_race(
+    race_times = simulate_race(
         driver="VER",
         race="Netherlands",
         year=2024,
@@ -139,3 +139,4 @@ if __name__ == "__main__":
             ),
         ],
     )
+    print(race_times)
