@@ -122,3 +122,11 @@ def calculate_avg_lap_time(race: str, year: int, compound: str, driver: str) -> 
         stint_laps["lap_time_approx_s"].apply(lambda x: x.total_seconds()).mean()
     )
     return avg_lap_time
+
+
+# Enum helpers
+def enum_from_race_name(enum_cls, race: str):
+    try:
+        return enum_cls[race.replace(" ", "_").upper()].value
+    except KeyError:
+        raise ValueError(f"Race not found: {race}")

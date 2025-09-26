@@ -1,4 +1,5 @@
 import pandas as pd
+import f1_strategy_simulator.common.helpers as h
 
 from enum import Enum
 
@@ -56,12 +57,8 @@ class PitStopTimeLoss(Enum):
     ABU_DHABI = 22.0
 
     @classmethod
-    def from_name(cls, race: str) -> float:
-        race_key = race.replace(" ", "_").upper()
-        try:
-            return cls[race_key].value
-        except KeyError:
-            raise ValueError(f"Race not found: {race}")
+    def from_name(cls, race: str) -> int:
+        return h.enum_from_race_name(cls, race)
 
 
 class NumberOfLaps(Enum):
@@ -92,8 +89,4 @@ class NumberOfLaps(Enum):
 
     @classmethod
     def from_name(cls, race: str) -> int:
-        race_key = race.replace(" ", "_").upper()
-        try:
-            return cls[race_key].value
-        except KeyError:
-            raise ValueError(f"Race not found: {race}")
+        return h.enum_from_race_name(cls, race)
