@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "f1-strategy-simulator"
+version = "0.0.1"
+description = "A Formula 1 race strategy simulator"
+authors = ["Ella Smorenburg <ellasmorenburg@gmail.com>"]
+license = "MIT"
+packages = [{ include = "f1_strategy_simulator" }]
+
+[tool.poetry.dependencies]
+python = ">=3.12"
+fastf1 = ">=3.6.1,<4.0.0"
+matplotlib = ">=3.10.6,<4.0.0"
+numpy = ">=2.3.3,<3.0.0"
+pandas = ">=2.3.2,<3.0.0"
+seaborn = ">=0.13.2,<0.14.0"
+
+[tool.poetry.dev-dependencies]
+black = "^23.7.0"
+flake8 = "^7.0.0"
+pylint = "^2.17.0"
+mypy = "^1.5.1"
+pre-commit = "^3.3.3"
+
+[tool.black]
+line-length = 88
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
