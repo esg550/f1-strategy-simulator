@@ -2,6 +2,7 @@ import pandas as pd
 
 from enum import Enum
 
+
 class TrackStatus(Enum):
     GREEN = 1
     YELLOW = 2
@@ -24,9 +25,11 @@ class TrackStatus(Enum):
             ).astype(int)
 
         return result
-    
+
+
 class PitStopTimeLoss(Enum):
     """Estimated time loss for pit stops including entry and exit time loss."""
+
     BAHRAIN = 25.0
     SAUDI_ARABIA = 21.0
     AUSTRALIA = 18.0
@@ -53,9 +56,10 @@ class PitStopTimeLoss(Enum):
     ABU_DHABI = 22.0
 
     @classmethod
-    def from_name(cls, race: str) -> int:
+    def from_name(cls, race: str) -> float:
         race_key = race.replace(" ", "_").upper()
         return cls[race_key].value
+
 
 class NumberOfLaps(Enum):
     BAHRAIN = 57
