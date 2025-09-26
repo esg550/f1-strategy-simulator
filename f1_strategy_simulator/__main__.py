@@ -25,7 +25,6 @@ def simulate_race(
     session = fastf1.get_session(year=year, gp=race, identifier=n.RACE)
     session.load()
 
-    stints = len(strategies[0]["stop_laps"]) + 1
     number_of_laps = NumberOfLaps.from_name(race)
     pit_stop_time_loss = PitStopTimeLoss.from_name(race)
 
@@ -50,14 +49,17 @@ def simulate_race(
         stint_lengths.append(number_of_laps - prev)  # final stint to end
 
         # now multiply avg lap times by stint lengths
-        for compound, stint_len in zip(compounds, stint_lengths):
-            current_lap_time = avg_lap_times[strategy["name"]][compound]
-            for lap in range(stint_len):
-                total_race_time += current_lap_time
-                next_lap_time = current_lap_time + tyre_degs[strategy["name"]][compound]
-                current_lap_time = next_lap_time
+        for i, (compound, stint_len) in enumerate(zip(compounds, stint_lengths)):
+            total_stint_time = calculate_total_stint_time(
+                avg_lap_times[strategy["name"]][compound],
+                tyre_deg=tyre_degs[strategy["name"]][compound],
+                stint_len=stint_len,
+            )
 
-        total_race_time += pit_stop_time_loss * (stints - 1)
+            total_race_time += total_stint_time
+            # add pit stop time loss if not the final stint
+            if i != len(stint_lengths) - 1:
+                total_race_time += pit_stop_time_loss
         total_race_times[strategy["name"]] = total_race_time
 
     return total_race_times
@@ -93,6 +95,12 @@ def calculate_tyre_degradation_and_avg_lap_times(
             ]
 
     return tyre_degs, avg_lap_times
+
+
+def calculate_total_stint_time(
+    avg_lap_time: float, tyre_deg: float, stint_len: int
+) -> float:
+    return stint_len * avg_lap_time + tyre_deg * (stint_len * (stint_len - 1) / 2)
 
 
 if __name__ == "__main__":
