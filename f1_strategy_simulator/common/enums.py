@@ -58,7 +58,10 @@ class PitStopTimeLoss(Enum):
     @classmethod
     def from_name(cls, race: str) -> float:
         race_key = race.replace(" ", "_").upper()
-        return cls[race_key].value
+        try:
+            return cls[race_key].value
+        except KeyError:
+            raise ValueError(f"Race not found: {race}")
 
 
 class NumberOfLaps(Enum):
@@ -90,4 +93,7 @@ class NumberOfLaps(Enum):
     @classmethod
     def from_name(cls, race: str) -> int:
         race_key = race.replace(" ", "_").upper()
-        return cls[race_key].value
+        try:
+            return cls[race_key].value
+        except KeyError:
+            raise ValueError(f"Race not found: {race}")
