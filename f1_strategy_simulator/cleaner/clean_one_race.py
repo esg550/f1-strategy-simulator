@@ -1,3 +1,6 @@
+
+# Refactor this code to make it cleaner, remove redundancy, and follow best practices
+
 import pandas as pd
 from fastf1.core import Session
 from fastf1.core import Laps

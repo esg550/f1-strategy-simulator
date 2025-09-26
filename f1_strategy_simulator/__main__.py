@@ -1,3 +1,5 @@
+# Refactor this code to make it cleaner, remove redundancy, and follow best practices
+
 import fastf1
 import f1_strategy_simulator.common.helpers as helpers
 import f1_strategy_simulator.common.names as n

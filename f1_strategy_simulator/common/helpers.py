@@ -1,3 +1,5 @@
+# Refactor this code to make it cleaner, remove redundancy, and follow best practices
+
 import fastf1
 from fastf1.core import Session
 
@@ -65,7 +67,8 @@ def calculate_tyre_degradation(driver: str, race: str, year: int, compound: str)
 
 def get_last_race_without_rain(race: str, year: int, driver: str) -> Session:
     """
-    Finds the last requested race before the given year that was not affected by rain and returns cleaned race data for the specified driver.
+    Finds the last requested race before the given year that was not affected by rain and 
+    returns cleaned race data for the specified driver.
     Args:
         race (str): Race name (e.g. 'Monaco')
         year (int): Year to start the search from
