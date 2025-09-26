@@ -65,13 +65,13 @@ def calculate_tyre_degradation(driver: str, race: str, year: int, compound: str)
 
 def get_last_race_without_rain(race: str, year: int, driver: str) -> Session:
     """
-    Finds the last requested race before the given year that was not affected by rain.
-
+    Finds the last requested race before the given year that was not affected by rain and returns cleaned race data for the specified driver.
     Args:
         race (str): Race name (e.g. 'Monaco')
         year (int): Year to start the search from
+        driver (str): Driver code (e.g., 'HAM' for Lewis Hamilton)
     Returns:
-        int: The year with the latest race without rain
+        Session: Cleaned race data for the specified driver
     """
     wet_compounds = ['INTERMEDIATE', 'WET']
     while True:
@@ -110,12 +110,14 @@ def plot_linear_regression(laps: pd.DataFrame, stint_number: int) -> None:
 
 def calculate_avg_lap_time(race: str, year: int, compound: str, driver: str) -> float:
     """
-    Calculate the average lap time for a given stint.
+    Calculate the average lap time for a given driver, race, year, and compound.
     Args:
-        laps (pd.DataFrame): DataFrame containing lap data
-        stint_number (int): The stint number to calculate the average lap time for
+        race (str): Race name (e.g., 'Monaco')
+        year (int): Year of the simulated average lap time
+        compound (str): Tyre compound to analyze (e.g., 'HARD', 'MEDIUM', 'SOFT')
+        driver (str): Driver code (e.g., 'HAM' for Lewis Hamilton)
     Returns:
-        float: Average lap time in seconds for the specified stint
+        float: Average lap time in seconds for the specified compound and driver
     """
     cleaned_session = get_last_race_without_rain(race=race, year=year-1, driver=driver)
 
